@@ -1,0 +1,92 @@
+#include <raylib.h>
+#include <vector>
+#include <string>
+
+// Screen dimensions
+int screenWidth;
+int screenHeight;
+
+// Player class
+class Player {
+public:
+    Vector2 position;
+    float speed;
+    
+    Player(float x, float y) {
+        position = {x, y};
+        speed = 100.0f;
+    }
+
+    void Move(float deltaTime) {
+        if (IsKeyDown(KEY_RIGHT)) position.x += speed * deltaTime;
+        if (IsKeyDown(KEY_LEFT)) position.x -= speed * deltaTime;
+        if (IsKeyDown(KEY_UP)) position.y -= speed * deltaTime;
+        if (IsKeyDown(KEY_DOWN)) position.y += speed * deltaTime;
+    }
+    
+    void Draw() {
+        DrawCircleV(position, 10, RED);
+    }
+};
+
+// Map class (now loads after InitWindow)
+class Map {
+public:
+    Texture2D background;
+    
+    void Load(const char* filename) {
+        background = LoadTexture(filename);
+        if (background.id == 0) {
+            TraceLog(LOG_ERROR, "Failed to load background image!");
+        }
+    }
+    
+    void Draw() {
+        DrawTexturePro(background, 
+                       {0, 0, (float)background.width, (float)background.height}, 
+                       {0, 0, (float)screenWidth, (float)screenHeight}, 
+                       {0, 0}, 0, WHITE);
+    }
+    
+    void Unload() {
+        UnloadTexture(background);
+    }
+};
+
+// Game class
+class Game {
+public:
+    Player player;
+    Map map;
+    
+    Game() : player(100, 100) {}
+    
+    void Run() {
+        InitWindow(1000, 950, "IUT Chronicles");
+        screenWidth = GetScreenWidth();
+        screenHeight = GetScreenHeight();
+        map.Load("map.png"); // Load after InitWindow
+        SetTargetFPS(60);
+        
+        while (!WindowShouldClose()) {
+            float deltaTime = GetFrameTime();
+            player.Move(deltaTime);
+            
+            BeginDrawing();
+            ClearBackground(RAYWHITE);
+            map.Draw();
+            player.Draw();
+            DrawText("IUT Chronicles - RPG", 10, 10, 20, BLACK);
+            EndDrawing();
+        }
+        
+        map.Unload();
+        CloseWindow();
+    }
+};
+
+int main() {
+    Game game;
+    game.Run();
+    return 0;
+}

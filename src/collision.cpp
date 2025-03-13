@@ -30,7 +30,7 @@ void ResolvePlayerBuildingCollision(Rectangle& destrect, const std::vector<Recta
     }
 }
 
-void ResolvePlayerIdleCollision(Rectangle& playerRect, const Rectangle& idleRect, Vector2& conversationPosition, bool& showConversation, int& conversationStep, bool& firstCollisionOccurred) {
+void ResolvePlayerIdleCollision(Rectangle& playerRect, const Rectangle& idleRect, Vector2& conversationPosition, bool& showConversation, int& conversationStep, bool& firstCollisionOccurred,bool &sequence5) {
     float overlapX = (playerRect.x + playerRect.width / 2) - (idleRect.x + idleRect.width / 2);
     float overlapY = (playerRect.y + playerRect.height / 2) - (idleRect.y + idleRect.height / 2);
     float halfWidthSum = (playerRect.width + idleRect.width) / 2;
@@ -59,12 +59,17 @@ void ResolvePlayerIdleCollision(Rectangle& playerRect, const Rectangle& idleRect
         conversationPosition = {playerRect.x - 50, playerRect.y - 280};
         showConversation = true;
 
+
         if (!firstCollisionOccurred) {
             conversationStep = 0;
             firstCollisionOccurred = true;
         } else {
             conversationStep = 2;
         }
+        if(sequence5){
+            conversationStep=5;
+        }
+        
     }
 }
 
@@ -80,6 +85,8 @@ void ResolvePlayerKeyCollision(Rectangle& playerRect, Rectangle& keyRect, bool& 
     }
 }
 
+
+
 void ResolvePlayerBookCollision(Rectangle& playerRect, Rectangle& keyRect, bool& bookFound) {
     float overlapX = (playerRect.x + playerRect.width / 2) - (keyRect.x + keyRect.width / 2);
     float overlapY = (playerRect.y + playerRect.height / 2) - (keyRect.y + keyRect.height / 2);
@@ -89,6 +96,19 @@ void ResolvePlayerBookCollision(Rectangle& playerRect, Rectangle& keyRect, bool&
     if (fabs(overlapX) < halfWidthSum && fabs(overlapY) < halfHeightSum) {
         std::cout << "Collision with book detected!" << std::endl;
         bookFound = true;
+    }
+}
+
+void ResolvePlayerUsbCollision(Rectangle& playerRect, Rectangle& usbRect, bool& usbFound, bool& showcipher) {
+    float overlapX = (playerRect.x + playerRect.width / 2) - (usbRect.x + usbRect.width / 2);
+    float overlapY = (playerRect.y + playerRect.height / 2) - (usbRect.y + usbRect.height / 2);
+    float halfWidthSum = (playerRect.width + usbRect.width) / 2;
+    float halfHeightSum = (playerRect.height + usbRect.height) / 2;
+
+    if (fabs(overlapX) < halfWidthSum && fabs(overlapY) < halfHeightSum) {
+        std::cout << "Collision with usb detected!" << std::endl;
+        usbFound = true;
+        showcipher = true; // Show the cipher when the USB is found
     }
 }
 
@@ -106,6 +126,76 @@ void ResolvePlayerHospitalCollision(Rectangle& playerRect, const Rectangle& hosp
             playerRect.x = 1259;
             playerRect.y = 56;
             playerPositionUpdated = true;
+        }
+    }
+}
+
+void ResolvePlayerHallCollision(Rectangle& playerRect, const Rectangle& hallRect, bool& insideHall, bool& playerPositionUpdated) {
+    float overlapX = (playerRect.x + playerRect.width / 2) - (hallRect.x + hallRect.width / 2);
+    float overlapY = (playerRect.y + playerRect.height / 2) - (hallRect.y + hallRect.height / 2);
+    float halfWidthSum = (playerRect.width + hallRect.width) / 2;
+    float halfHeightSum = (playerRect.height + hallRect.height) / 2;
+
+    if (fabs(overlapX) < halfWidthSum && fabs(overlapY) < halfHeightSum) {
+        std::cout << "Collision with hall detected!" << std::endl;
+        insideHall = true;
+
+        if (!playerPositionUpdated) {
+            playerRect.x = 1285;
+            playerRect.y = 1502;
+            playerPositionUpdated = true;
+        }
+    }
+}
+
+void ResolvePlayerAudiCollision(Rectangle& playerRect, const Rectangle& audiRect, bool& insideAudi, bool& playerPositionUpdated) {
+    float overlapX = (playerRect.x + playerRect.width / 2) - (audiRect.x + audiRect.width / 2);
+    float overlapY = (playerRect.y + playerRect.height / 2) - (audiRect.y + audiRect.height / 2);
+    float halfWidthSum = (playerRect.width + audiRect.width) / 2;
+    float halfHeightSum = (playerRect.height + audiRect.height) / 2;
+
+    if (fabs(overlapX) < halfWidthSum && fabs(overlapY) < halfHeightSum) {
+        std::cout << "Collision with audi detected!" << std::endl;
+        insideAudi = true;
+
+        if (!playerPositionUpdated) {
+            playerRect.x = 100;
+            playerRect.y = 104;
+            playerPositionUpdated = true;
+        }
+    }
+}
+
+void ResolvePlayerHackerCollision(Rectangle& playerRect, const Rectangle& hackerRect, bool& showHackerConvo, int& hackerConvoStep) {
+    float overlapX = (playerRect.x + playerRect.width / 2) - (hackerRect.x + hackerRect.width / 2);
+    float overlapY = (playerRect.y + playerRect.height / 2) - (hackerRect.y + hackerRect.height / 2);
+    float halfWidthSum = (playerRect.width + hackerRect.width) / 2;
+    float halfHeightSum = (playerRect.height + hackerRect.height) / 2;
+
+    if (fabs(overlapX) < halfWidthSum && fabs(overlapY) < halfHeightSum) {
+        std::cout << "Collision with hacker detected!" << std::endl;
+        if(!showHackerConvo && hackerConvoStep!=7){
+            showHackerConvo = true;
+            hackerConvoStep = 0;
+        }
+    }
+}
+
+void ResolvePlayerProCollision(Rectangle& playerRect, const Rectangle& proRect, bool& showProConvo, int& proConvoStep,bool &sequence6) {
+    float overlapX = (playerRect.x + playerRect.width / 2) - (proRect.x + proRect.width / 2);
+    float overlapY = (playerRect.y + playerRect.height / 2) - (proRect.y + proRect.height / 2);
+    float halfWidthSum = (playerRect.width + proRect.width) / 2;
+    float halfHeightSum = (playerRect.height + proRect.height) / 2;
+
+    if (fabs(overlapX) < halfWidthSum && fabs(overlapY) < halfHeightSum) {
+        std::cout << "Collision with pro detected!" << std::endl;
+        if(!showProConvo && sequence6 && proConvoStep!=14){
+            showProConvo = true;
+            proConvoStep = 7;
+        } 
+        else if(!showProConvo && proConvoStep!=7 &&!sequence6){
+            showProConvo = true;
+            proConvoStep = 0;
         }
     }
 }
@@ -146,6 +236,40 @@ void ResolvePlayerLibraryCollision(Rectangle& playerRect, const Rectangle& libra
     }
 }
 
+void ResolvePlayerClassroomCollision(Rectangle& playerRect, const Rectangle& classroomRect, bool& insideClassroom, bool& playerPositionUpdated) {
+    float overlapX = (playerRect.x + playerRect.width / 2) - (classroomRect.x + classroomRect.width / 2);
+    float overlapY = (playerRect.y + playerRect.height / 2) - (classroomRect.y + classroomRect.height / 2);
+    float halfWidthSum = (playerRect.width + classroomRect.width) / 2;
+    float halfHeightSum = (playerRect.height + classroomRect.height) / 2;
+
+    if (fabs(overlapX) < halfWidthSum && fabs(overlapY) < halfHeightSum) {
+        std::cout << "Collision with classroom detected!" << std::endl;
+        insideClassroom = true;
+
+        if (!playerPositionUpdated) {
+            playerRect.x = 1940;
+            playerRect.y = 1370;
+            playerPositionUpdated = true;
+        }
+    }
+}
+
+
+void ResolvePlayerGardenerCollision(Rectangle& playerRect, const Rectangle& gardenerRect, bool& showGardenerConvo, int& gardenerConvoStep) {
+    float overlapX = (playerRect.x + playerRect.width / 2) - (gardenerRect.x + gardenerRect.width / 2);
+    float overlapY = (playerRect.y + playerRect.height / 2) - (gardenerRect.y + gardenerRect.height / 2);
+    float halfWidthSum = (playerRect.width + gardenerRect.width) / 2;
+    float halfHeightSum = (playerRect.height + gardenerRect.height) / 2;
+
+    if (fabs(overlapX) < halfWidthSum && fabs(overlapY) < halfHeightSum) {
+        std::cout << "Collision with gardener detected!" << std::endl;
+        if(!showGardenerConvo && gardenerConvoStep!=7){
+            showGardenerConvo = true;
+            gardenerConvoStep = 0;
+        }
+    }
+}
+
 void InsideHospital(Rectangle& playerRect, const std::vector<Rectangle>& hospitalCollisions) {
     for (const auto& rect : hospitalCollisions) {
         float overlapX = (playerRect.x + playerRect.width / 2) - (rect.x + rect.width / 2);
@@ -177,3 +301,86 @@ void InsideHospital(Rectangle& playerRect, const std::vector<Rectangle>& hospita
     if(playerRect.y>=990) playerRect.y=990;
 }
 
+void InsideLibrary(Rectangle& playerRect, const std::vector<Rectangle>& libraryCollisions) {
+    for (const auto& rect : libraryCollisions) {
+        float overlapX = (playerRect.x + playerRect.width / 2) - (rect.x + rect.width / 2);
+        float overlapY = (playerRect.y + playerRect.height / 2) - (rect.y + rect.height / 2);
+        float halfWidthSum = (playerRect.width + rect.width) / 2;
+        float halfHeightSum = (playerRect.height + rect.height) / 2;
+
+        if (fabs(overlapX) < halfWidthSum && fabs(overlapY) < halfHeightSum) {
+            float penetrationX = halfWidthSum - fabs(overlapX);
+            float penetrationY = halfHeightSum - fabs(overlapY);
+
+            if (penetrationX < penetrationY) {
+                if (overlapX > 0) {
+                    playerRect.x += penetrationX;
+                } else {
+                    playerRect.x -= penetrationX;
+                }
+            } else {
+                if (overlapY > 0) {
+                    playerRect.y += penetrationY;
+                } else {
+                    playerRect.y -= penetrationY;
+                }
+            }
+        }
+    }
+}
+
+void InsideClassroom(Rectangle& playerRect, const std::vector<Rectangle>& classroomCollisions) {
+    for (const auto& rect : classroomCollisions) {
+        float overlapX = (playerRect.x + playerRect.width / 2) - (rect.x + rect.width / 2);
+        float overlapY = (playerRect.y + playerRect.height / 2) - (rect.y + rect.height / 2);
+        float halfWidthSum = (playerRect.width + rect.width) / 2;
+        float halfHeightSum = (playerRect.height + rect.height) / 2;
+
+        if (fabs(overlapX) < halfWidthSum && fabs(overlapY) < halfHeightSum) {
+            float penetrationX = halfWidthSum - fabs(overlapX);
+            float penetrationY = halfHeightSum - fabs(overlapY);
+
+            if (penetrationX < penetrationY) {
+                if (overlapX > 0) {
+                    playerRect.x += penetrationX;
+                } else {
+                    playerRect.x -= penetrationX;
+                }
+            } else {
+                if (overlapY > 0) {
+                    playerRect.y += penetrationY;
+                } else {
+                    playerRect.y -= penetrationY;
+                }
+            }
+        }
+    }
+}
+
+void InsideHall(Rectangle& playerRect,const std::vector<Rectangle>& hallCollisions) {
+    for (const auto& rect : hallCollisions) {
+        float overlapX = (playerRect.x + playerRect.width / 2) - (rect.x + rect.width / 2);
+        float overlapY = (playerRect.y + playerRect.height / 2) - (rect.y + rect.height / 2);
+        float halfWidthSum = (playerRect.width + rect.width) / 2;
+        float halfHeightSum = (playerRect.height + rect.height) / 2;
+
+        if (fabs(overlapX) < halfWidthSum && fabs(overlapY) < halfHeightSum) {
+            float penetrationX = halfWidthSum - fabs(overlapX);
+            float penetrationY = halfHeightSum - fabs(overlapY);
+
+            if (penetrationX < penetrationY) {
+                if (overlapX > 0) {
+                    playerRect.x += penetrationX;
+                } else {
+                    playerRect.x -= penetrationX;
+                }
+            } else {
+                if (overlapY > 0) {
+                    playerRect.y += penetrationY;
+                } else {
+                    playerRect.y -= penetrationY;
+                }
+            }
+        }
+    }
+}

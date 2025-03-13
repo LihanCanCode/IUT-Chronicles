@@ -1,6 +1,7 @@
 #include "game.h"
 #include "collision.h"
 #include "idle.h"
+
 #include <iostream>
 #include <vector>
 using namespace std;
@@ -25,9 +26,10 @@ vector<Rectangle> buildings = { Rectangle{422,640,250,550}, //
                                 Rectangle{1399, 56, 270, 270}, //medical
                                 Rectangle{100, 70, 550, 280}, //female
                                 Rectangle{420,1190, 250, 215},
-                                Rectangle{672, 740, 450, 260},//auditorium
+                                Rectangle{672, 830, 360, 210},//auditorium
                                 Rectangle{1338, 1825, 200, 170},//right mid hall
-                                Rectangle{1065,1810,120,120}
+                                Rectangle{1065,1810,120,120},
+                                Rectangle{310,493,140,50}
                                 };
 Rectangle idleRect = {1142, 1045, 70, 95}; // Define the idle character's collision rectangle
 Rectangle keyRect = {1300, 80, 32, 32}; // Define the key's collision rectangle
@@ -41,8 +43,12 @@ Rectangle usbRect = {1728, 1395, 32, 32}; // Define the USB's collision rectangl
 Rectangle hallRect={1840,1990,100,20};
 Rectangle hackerRect= {880,975,130,120};
 Rectangle gardenerRect ={1060,1800,120,120};
-Rectangle audiRect={805,1000,30,15};
+Rectangle audiRect={805,1040,100,15};
 Rectangle proRect={1100,870,60,120};
+Rectangle apuRect={300,493,170,70};
+Rectangle bhaiRect={1650, 260, 200, 100};
+Rectangle lastRect = {2260,330,240,170};
+//drawRectangle{1750,500,,500,500}
 
 //Inside Hospital Rectangles
 vector<Rectangle> hospitalCollisions = {
@@ -62,17 +68,34 @@ vector<Rectangle> hospitalCollisions = {
     {1274,287,210,70}
 };
 
+
 vector<Rectangle> libraryCOllisions ={
-    /*{1450,56,750,84},
-    {740,56,625,84},
-    {740,145,115,495},
-    {1950,145,250,45},
-    {757,727,95,284},
-    {727,1100,123,550},
-    {727,1750,122,253},
-    {850,1912,161,1003},
-    {1970,895,230,580}*/
+    {141,90,510,75},
+    {757,90,750,75},
+    {105,140,55,505},
+    {1250,137,260,505},
+    {102,717,55,315},
+    {102,1105,55,562},
+    {102,1742,55,150},
+    {134,1900,750,150},
+    {1250,893,250,595},
+    {1850,76,115,580},
+    {1850,890,115,595},
+    {1995,115,135,335},
+    {2120,115,206,125},
+    {2420,115,340,125},
+    {2635,240,135,206},
+    {2000,540,130,448},
+    {2130,750,200,235},
+    {2430,750,200,235},
+    {2620,547,140,448},
+    {1995,1110,97,285},
+    {2205,1110,97,295},
+    {2445,1110,97,300},
+    {2690,1110,97,300}
 };
+
+
 
 vector<Rectangle> classroomCollisions ={
     {50,838,1460,225}, // upper wall
@@ -106,12 +129,62 @@ vector<Rectangle> hallCollisions ={
    {2212,1322,250,40}
 };
 
+vector<Rectangle> audiCollisions = {
+    {496,222,1100,535},
+    {496,1040,1100,535},
+    {50,220,300,1365}
+};
 
 
 
+vector<Rectangle> mazeCollisions ={
+    {50,56,1850,115},
+    {50,930,1850,100},
+    {75,140,105,110},
+    {75,336,105,650},
+    {440,165,100,155},
+    {255,225,105,215},
+    {355,375,235,70},
+    {592,220,100,515},
+    {180,515,350,70},
+    {430,585,100,160},
+    {235,645,100,220},
+    {335,810,240,70},
+    {600,805,90,120},
+    {690,680,190,70},
+    {777,744,100,125},
+    {865,800,530,70},
+    {1502,670,110,300},
+    {777,224,100,385},
+    {867,545,85,70},
+    {955,165,100,560},
+    {1045,656,185,70},
+    {1315,595,100,200},
+    {1125,240,100,345},
+    {1212,525,500,80},
+    {1212,240,400,70},
+    {1520,295,110,150},
+    {1292,356,85,105},
+    {1377,407,150,70},
+    {1710,165,110,670}
+
+};
 
 
-Game::Game() {
+Rectangle startRect = {108,137,376,150};
+
+Rectangle exitRect = {110,320,376,150};
+
+
+Game::Game(){
+
+
+
+    GameRunning = true;
+    gameStart = true;
+    gameExit = false;
+    playerDraw = false;
+
     initialized = false;
     showDebugInfo = true;
     insideHospital = false;
@@ -148,6 +221,24 @@ Game::Game() {
     sequence5=false;
     sequence6=false;
     sequence7=false;
+    mazeActive=false;
+    ans=false;
+    mad=false;
+    apuConvoStep=0;
+    showApuConvo=false;
+    firstApuCollision=false;
+    apuConversationPosition={0,0};
+    showBhaiConvo=false;
+    bhaiConvoStep=0;
+    firstBhaiCollision=false;
+    bhaiConversationPosition={0,0};
+    Final=false;
+    finalStep=0;
+    showAns=false;
+    showmap=false;
+    show=false;
+
+    //healthSystem = HealthSystem();
 
 
 
@@ -176,7 +267,9 @@ void Game::Initialize() {
     SetTargetFPS(60);
     initialized = true;
 
-    
+    menu[0] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/menu1.png");
+    menu[1] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/menu2.png");
+    menu[2] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/menu3.png");
        
 
     // Load the conversation textures
@@ -204,6 +297,30 @@ void Game::Initialize() {
     audiTexture = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/audi.png");
     proTexture = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/professor.png");
     hackerTexture = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/hacker.png");
+    mazeTexture = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/maze.png");
+    bhaiTexture = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/Bhai.png");
+
+    bhaiConvoTexture[0] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/bhai_convo1.png");
+    bhaiConvoTexture[1] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/bhai_convo2.png");
+    bhaiConvoTexture[2] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/bhai_convo3.png");
+    bhaiConvoTexture[3] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/bhai_convo4.png");
+    bhaiConvoTexture[4] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/bhai_convo5.png");
+    bhaiConvoTexture[5] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/bhai_convo6.png");
+    bhaiConvoTexture[6] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/bhai_convo7.png");
+    bhaiConvoTexture[7] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/bhai_convo8.png");
+    bhaiConvoTexture[8] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/bhai_convo9.png");
+    bhaiConvoTexture[9] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/bhai_convo10.png");
+    bhaiConvoTexture[10] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/bhai_convo11.png");
+
+    
+    apuConvoTexture[0] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/apu_convo1.png");
+    apuConvoTexture[1] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/apu_convo2.png");
+    apuConvoTexture[2] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/apu_convo3.png");
+    apuConvoTexture[3] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/apu_convo4.png");
+    apuConvoTexture[4] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/apu_convo5.png");
+    apuConvoTexture[5] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/apu_convo6.png");
+    apuConvoTexture[6] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/apu_convo7.png");
+    
     hackerConvoTexture[0] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/hacker_convo_1.png");
     hackerConvoTexture[1] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/hacker_convo_2.png");
     hackerConvoTexture[2] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/hacker_convo_3.png");
@@ -233,18 +350,33 @@ void Game::Initialize() {
     proConvoTexture[12] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/pro13.png");
     proConvoTexture[13] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/pro14.png");
 
+    pathTexture1 = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/path1.png");
+    pathTexture2 = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/path2.png");
+
+
+    finalTexture[0] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/end1.png");
+    finalTexture[1] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/end2.png");
+    finalTexture[2] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/end3.png");
+    finalTexture[3] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/end4.png");
+
     imamTexture[0] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/conversation5.png");
     imamTexture[1] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/conversation6.png");
     imamTexture[2] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/conversation7.png");
     imamTexture[3] = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/conversation8.png");
     gardenerTexture = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/gardener.png");
+    apuTexture = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/apu.png");
     source1={0.0f,0.0f,(float)mysteryTexture2.width,(float)mysteryTexture2.height};
 
 
 }
 
 void Game::UpdateCamera() {
-    if (insideClassroom) {
+    if (gameStart) {
+        // Center the camera on the menu
+        camera.target = {GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f};
+        camera.zoom = 1.0f; // Set the zoom level to fit the menu
+    }
+    else if (insideClassroom) {
         // Set the camera target and zoom for the classroom
         camera.target = player.position;
         camera.zoom = 1.25f; // Adjust the zoom level to fit the classroom map
@@ -291,6 +423,38 @@ void Game::UpdateCamera() {
         if (camera.target.x > maxX) camera.target.x = maxX;
         if (camera.target.y > maxY) camera.target.y = maxY;
     } 
+    else if(mazeActive){
+        camera.target = player.position;
+        camera.zoom = 1.0f; // Adjust the zoom level for the maze
+
+        // Constrain the camera within the maze boundaries
+        float minX = 0 + GetScreenWidth() / 2 / camera.zoom;
+        float minY = 0 + GetScreenHeight() / 2 / camera.zoom;
+        float maxX = 1920 - GetScreenWidth() / 2 / camera.zoom;
+        float maxY = 1080 - GetScreenHeight() / 2 / camera.zoom;
+
+        if (camera.target.x < minX) camera.target.x = minX;
+        if (camera.target.y < minY) camera.target.y = minY;
+        if (camera.target.x > maxX) camera.target.x = maxX;
+        if (camera.target.y > maxY) camera.target.y = maxY;
+
+    }
+    else if (insideCDS) {
+        // Set the camera target and zoom for the CDS
+        camera.target = player.position;
+        camera.zoom = 1.2f; // Adjust the zoom level for the CDS
+
+        // Constrain the camera within the CDS boundaries
+        float minX = 0 + GetScreenWidth() / 2 / camera.zoom;
+        float minY = 0 + GetScreenHeight() / 2 / camera.zoom;
+        float maxX = 1920 - GetScreenWidth() / 2 / camera.zoom;
+        float maxY = 1080 - GetScreenHeight() / 2 / camera.zoom;
+
+        if (camera.target.x < minX) camera.target.x = minX;
+        if (camera.target.y < minY) camera.target.y = minY;
+        if (camera.target.x > maxX) camera.target.x = maxX;
+        if (camera.target.y > maxY) camera.target.y = maxY;
+    } 
     else {
         // Default camera behavior
         camera.target = player.position;
@@ -315,7 +479,7 @@ void Game::Run() {
 
     bool playerPositionUpdated = false; // Flag to ensure the player's position is updated only once
 
-    while (!WindowShouldClose()) {
+    while (!WindowShouldClose() && GameRunning) {
         if (IsKeyPressed(KEY_F1)) {
             showDebugInfo = !showDebugInfo;
         }
@@ -331,17 +495,20 @@ void Game::Run() {
 
         float deltaTime = GetFrameTime();
         
-        if (!showConversation && !showMystery && !showMystery2 && !showMystery3 && !showcipher && !showcipher2 && !showHackerConvo && !showGardenerConvo && !showProConvo) { // Only move the player if conversation is NOT showing
+        if (!showConversation && !showMystery && !showMystery2 && !showMystery3 && !showcipher && !showcipher2 && !showHackerConvo && !showGardenerConvo && !showProConvo && !showApuConvo && !showBhaiConvo) { // Only move the player if conversation is NOT showing
             player.Move(deltaTime, insideLibrary, insideClassroom, insideHospital, insideCDS, insideHall);
         }
 
+        
         // Adjust the collision rectangle to better fit the player's sprite
         Rectangle playerCollisionRect = {player.position.x, player.position.y, 25, 25};
         
-        if (!insideHospital && !insideCDS && !insideLibrary && !insideClassroom && !insideHall && !insideAudi) {
+        if (!insideHospital && !insideCDS && !insideLibrary && !insideClassroom && !insideHall && !insideAudi && !mazeActive) {
             // Perform collision detection and resolution
             ResolvePlayerBuildingCollision(playerCollisionRect, buildings);
             ResolvePlayerIdleCollision(playerCollisionRect, idleRect, conversationPosition, showConversation, conversationStep, firstCollisionOccurred,sequence5);
+            if(firstBhaiCollision && !firstApuCollision)
+                ResolvePlayerApuCollision(playerCollisionRect, apuRect, apuConversationPosition, showApuConvo, apuConvoStep, firstApuCollision);
 
             if (keyVisible && !keyFound) {
                 ResolvePlayerKeyCollision(playerCollisionRect, keyRect, keyFound);
@@ -349,18 +516,21 @@ void Game::Run() {
         }
 
 
-        if(!insideHospital && !insideCDS && !insideLibrary && !insideClassroom && !insideHall && !insideAudi){
+        if(!insideHospital && !insideCDS && !insideLibrary && !insideClassroom && !insideHall && !insideAudi && !mazeActive){
             ResolvePlayerHospitalCollision(playerCollisionRect, hospitalRect, insideHospital, playerPositionUpdated); // Check for hospital collision
             ResolvePlayerCDSCollision(playerCollisionRect, cdsRect, insideCDS, playerPositionUpdated); // Check for CDS collision
             ResolvePlayerLibraryCollision(playerCollisionRect, libraryRect, insideLibrary, playerPositionUpdated); // Check for library collision
             ResolvePlayerClassroomCollision(playerCollisionRect, classroomRect, insideClassroom, playerPositionUpdated); // Check for library collision	
             ResolvePlayerHallCollision(playerCollisionRect, hallRect, insideHall, playerPositionUpdated); // Check for library collision
-            ResolvePlayerGardenerCollision(playerCollisionRect, gardenerRect, showGardenerConvo, gardenerConvoStep);
+            if(mad)
+                ResolvePlayerGardenerCollision(playerCollisionRect, gardenerRect, showGardenerConvo, gardenerConvoStep);
             ResolvePlayerAudiCollision(playerCollisionRect, audiRect, insideAudi, playerPositionUpdated); // Check for library collision
+            if(firstApuCollision)
+                ResolvePlayerMazeCollision(playerCollisionRect, mazeRect, mazeActive, playerPositionUpdated); // Check for library collision
         }
 
         if (insideHospital) {
-            DrawRectangleLines(711, 585, 260, 280, BLUE);
+            /*DrawRectangleLines(711, 585, 260, 280, BLUE);
             DrawRectangleLines(1272, 227, 240, 135, BLUE);
             DrawRectangleLines(1042, 231, 232, 300, BLUE);
             DrawRectangleLines(752, 229, 208, 60, BLUE);
@@ -368,7 +538,7 @@ void Game::Run() {
             DrawRectangleLines(1050, 425, 450, 25, BLUE);
             DrawRectangleLines(1060, 450, 245, 405, BLUE);
             DrawRectangleLines(690,423,225,50,BLUE);
-            
+            */
             InsideHospital(playerCollisionRect, hospitalCollisions);
 
             //check
@@ -385,7 +555,10 @@ void Game::Run() {
 
 
         if(insideCDS){
-            DrawRectangleLines(1390,1670,80,30,BLUE);
+            //DrawRectangleLines(1390,1670,80,30,BLUE);
+            if(ans|| !firstBhaiCollision)
+                ResolvePlayerBhaiCollision(playerCollisionRect, bhaiRect, bhaiConversationPosition, showBhaiConvo, bhaiConvoStep,firstBhaiCollision);
+           // DrawRectangleLines(1600, 260, 250, 150,BLUE);
             if(IsKeyPressed(KEY_C)){
                 insideCDS=false;
                 player.position.x=1390;
@@ -412,6 +585,10 @@ void Game::Run() {
             }
             
             InsideLibrary(playerCollisionRect, libraryCOllisions);
+
+            if(sequence7){
+                FinalCollision(playerCollisionRect, lastRect, Final);
+            }
             //check bookfound
             
             if(sequence1 && !bookFound){
@@ -461,16 +638,34 @@ void Game::Run() {
         }
 
         if(insideAudi){
+            InsideAudi(playerCollisionRect, audiCollisions);
             if(sequence2 || sequence6)
                 ResolvePlayerProCollision(playerCollisionRect, proRect, showProConvo, proConvoStep, sequence6);
             if(IsKeyPressed(KEY_C)){
                 insideAudi=false;
                 player.position.x=815;
-                player.position.y=1020;
+                player.position.y=1075;
                 playerCollisionRect.x = 815; // Update the collision rectangle position
-                playerCollisionRect.y = 1020;   // Update the collision rectangle position
+                playerCollisionRect.y = 1075;   // Update the collision rectangle position
 
                 playerPositionUpdated=false;
+            }
+        }
+        if(mazeActive)
+        {
+            Rectangle ansRect={1810,845,100,80};
+            InsideMaze(playerCollisionRect, mazeCollisions);
+            ResolvePlayerAnsCollision(playerCollisionRect, ansRect, ans);
+            if(ans)
+            {
+                showAns=true;
+                showmap=true;
+                mazeActive=false;
+                player.position.x=1300;
+                player.position.y=1820;
+                playerCollisionRect.x = 1300; // Update the collision rectangle position
+                playerCollisionRect.y = 1820;
+
             }
         }
 
@@ -490,14 +685,25 @@ void Game::Run() {
             DrawTexture(hospitalTexture, 700, 0, WHITE); // Draw the hospital map
         }
         else if(insideCDS){
+
+
             DrawTexture(cdsTexture, 0, 0 , WHITE); // Draw the CDS map
+
+            //Draw BHai
+            Rectangle bhaiSource = {0.0f, 0.0f, (float)bhaiTexture.width, (float)bhaiTexture.height};
+            Rectangle bhaiDest = {1600, 260, 250, 150}; // Set the destination rectangle to the desired dimensions
+            Vector2 bhaiOrigin = {0, 0};
+            DrawTexturePro(bhaiTexture, bhaiSource, bhaiDest, bhaiOrigin, 0.0f, WHITE);
+
         }
         else if(insideLibrary){
             DrawTexture(libraryTexture, 0, 0 , WHITE); // Draw the library map
             if(sequence1 && !bookFound){
                 DrawTexture(bookTexture, 1585,364, WHITE);
-                DrawRectangleLines(1585, 364, 32, 32, RED); // Draw the book's collision rectangle
+               // DrawRectangleLines(1585, 364, 32, 32, RED); // Draw the book's collision rectangle
             }
+
+            
             /*if(!bookFound){
                 DrawTexture(bookTexture, bookRect.x, bookRect.y, WHITE);
                 DrawRectangleLines(bookRect.x, bookRect.y, 32, 32, RED); // Draw the book's collision rectangle
@@ -512,7 +718,7 @@ void Game::Run() {
                 Rectangle usbSource = {0.0f, 0.0f, (float)usbTexture.width, (float)usbTexture.height};
                 Rectangle usbDest = {1728, 1395, 32, 32}; // Set the destination rectangle to 50x50
                 DrawTexturePro(usbTexture, usbSource, usbDest, origin, 0.0f, WHITE);
-                DrawRectangleLines(1140,11413,100,40,RED);
+                //DrawRectangleLines(1140,11413,100,40,RED);
             }
         }
         else if(insideHall){
@@ -538,17 +744,61 @@ void Game::Run() {
             Rectangle dest2 = {930, 760, 450, 300}; // Set the destination rectangle to the desired dimensions
             Vector2 origin2 = {0, 0};
             DrawTexturePro(proTexture, source2, dest2, origin2, 0.0f, WHITE); // Draw the audi map using DrawTexturePro
-            DrawRectangleLines(1050,870,120,120,RED);
+           // DrawRectangleLines(1050,870,120,120,RED);
+        }
+        else if(mazeActive){
+            //DrawTexture
+            Rectangle source = {0.0f, 0.0f, (float)mazeTexture.width, (float)mazeTexture.height};
+            Rectangle dest = {0, 0, 1920, 1080}; // Set the destination rectangle to the desired dimensions
+            Vector2 origin = {0, 0};
+            DrawTexturePro(mazeTexture, source, dest, origin, 0.0f, WHITE); // Draw the audi map using DrawTexturePro
+        }
+        else if(gameStart){
+
+            Rectangle source = {0.0f, 0.0f, (float)menu[0].width, (float)menu[0].height};
+            Rectangle dest = {-20, -20, (float)GetScreenWidth()+20, (float)GetScreenHeight()+20};
+            
+            Vector2 mousePos = GetMousePosition();
+            cout << "Mouse Position: " << mousePos.x << " " << mousePos.y << endl;
+            if(CheckCollisionPointRec(mousePos, startRect))
+            {
+                if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+                    gameStart=false;
+                    playerDraw=true;
+                }
+                DrawTexturePro(menu[1], source, dest, {0, 0}, 0.0f, WHITE);
+                
+            }
+            else if (CheckCollisionPointRec(mousePos, exitRect))
+            {   
+                if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+                    GameRunning=false;
+                }
+                DrawTexturePro(menu[2], source, dest, {0, 0}, 0.0f, WHITE);
+               
+            }
+            else
+            {
+                DrawTexturePro(menu[0], source, dest, {0, 0}, 0.0f, WHITE);
+            }
+        
+            if(IsKeyPressed(KEY_ENTER)){
+                gameStart=false;
+                playerDraw=true;
+            }
         }
         else {
             map.Draw(cameraPosition); // Draw the main map
         }
-        player.Draw(cameraPosition);
+        if(playerDraw){
+            player.Draw(cameraPosition);
+    }
+
 
         
        
        //map idle draw
-        if (!insideHospital && !insideCDS && !insideLibrary && !insideClassroom && !insideHall && !insideAudi) {
+        if (!insideHospital && !insideCDS && !insideLibrary && !insideClassroom && !insideHall && !insideAudi && !mazeActive && playerDraw) {
            // DrawTexturePro(Texture, source, {idleRect.x, idleRect.y, idleRect.width, idleRect.height}, {idleRect.width / 2, idleRect.height / 2}, 0.0f, WHITE);
             idle.Draw(cameraPosition);
             Rectangle gardenerSource = {0.0f, 0.0f, (float)gardenerTexture.width, (float)gardenerTexture.height};
@@ -556,6 +806,11 @@ void Game::Run() {
             Vector2 gardenerOrigin = {0, 0};
             DrawTexturePro(gardenerTexture, gardenerSource, gardenerDest, gardenerOrigin, 0.0f, WHITE);
 
+            //Apu Drawing
+            Rectangle apuSource = {0.0f, 0.0f, (float)apuTexture.width, (float)apuTexture.height};
+            Rectangle apuDest = {apuRect.x, apuRect.y, apuRect.width-10, apuRect.height}; // Set the destination rectangle to the desired dimensions
+            Vector2 apuOrigin = {0, 0};
+            DrawTexturePro(apuTexture, apuSource, apuDest, apuOrigin, 0.0f, WHITE);
         }
 
         if(showMystery){
@@ -597,7 +852,7 @@ void Game::Run() {
         
         
         //drawing rectangle for collision check
-        DrawRectangleLines(idleRect.x, idleRect.y, idleRect.width, idleRect.height, RED);
+        /*DrawRectangleLines(idleRect.x, idleRect.y, idleRect.width, idleRect.height, RED);
         DrawRectangleLines(422,640,240,550, RED);
         DrawRectangleLines(240,2051,1330,200, RED);
         DrawRectangleLines(1185,855,220,250, RED);
@@ -615,13 +870,16 @@ void Game::Run() {
         DrawRectangleLines(1399, 56, 270, 270,RED);
         DrawRectangleLines(100, 70, 550, 280,RED);
         DrawRectangleLines(420,1190, 240, 215,RED);
-        DrawRectangleLines(672, 740, 450, 260,RED);
+        DrawRectangleLines(672, 830, 360, 210,RED);
         DrawRectangleLines(1338, 1825, 200, 170,RED);
         DrawRectangleLines(1335, 1820, 210, 180,GREEN);
         DrawRectangleLines(1395, 50, 280, 280,GREEN);
         DrawRectangleLines(1390,1670,80,30,GREEN);
         DrawRectangleLines(1940,914,150,30,GREEN);
         DrawRectangleLines(1060,1800,100,100,GREEN);
+        DrawRectangleLines(806,1040,30,30,GREEN);
+        */
+       DrawRectangleLines(1750,500,500,500,GREEN);
 
         // If conversation is active, draw the appropriate image
         if (showConversation) {
@@ -648,6 +906,24 @@ void Game::Run() {
                 DrawTexture(conversationTexture8, conversationPosition.x-250, conversationPosition.y-320, WHITE);
         }
 
+        //apu
+        if (showApuConvo) {
+            DrawTexture(apuConvoTexture[apuConvoStep], apuConversationPosition.x + 60, apuConversationPosition.y - 50, WHITE);
+            
+        }
+
+        if(showBhaiConvo){
+            DrawTexture(bhaiConvoTexture[bhaiConvoStep], bhaiConversationPosition.x-400, bhaiConversationPosition.y -50, WHITE);
+        }
+
+        if(showAns){
+            DrawTexture(pathTexture1,500,1200,WHITE);
+        }
+
+        if(showmap ){
+            DrawTexture(pathTexture2, 500, 1000, WHITE);
+        }
+
         if(showHackerConvo){
             DrawTexture(hackerConvoTexture[hackerConvoStep], 350, 450, WHITE);
             sequence5=true;
@@ -666,8 +942,13 @@ void Game::Run() {
         // Draw the key if it is visible and has not been found
         if (keyVisible && !keyFound) {
             DrawTexture(keyTexture, keyRect.x, keyRect.y, WHITE);
-            DrawRectangleLines(keyRect.x, keyRect.y, 32, 32, RED); // Draw the key's collision rectangle
+           // DrawRectangleLines(keyRect.x, keyRect.y, 32, 32, RED); // Draw the key's collision rectangle
         }
+
+        if(Final){
+            DrawTexture(finalTexture[finalStep], 1000, 0, WHITE);
+        }
+        
 
         EndMode2D();
 
@@ -681,12 +962,20 @@ void Game::Run() {
         DrawText(TextFormat("Conversation: %s", showConversation ? "ON" : "OFF"), GetScreenWidth() - 200, 50, 20, BLACK);
         DrawText(TextFormat("Inside Hospital: %s", insideHospital ? "YES" : "NO"), GetScreenWidth() - 200, 80, 20, BLACK);
         DrawText(TextFormat("Inside CDS: %s", insideCDS ? "YES" : "NO"), GetScreenWidth() - 200, 110, 20, BLACK);
-        DrawText(TextFormat("Inside Library: %s", insideLibrary ? "YES" : "NO"), GetScreenWidth() - 200, 140, 20, BLACK);
+        DrawText(TextFormat("Mad: %s", mad ? "YES" : "NO"), GetScreenWidth() - 200, 140, 20, BLACK);
         DrawText(TextFormat("Inside Classroom: %s", insideClassroom ? "YES" : "NO"), GetScreenWidth() - 200, 170, 20, BLACK);
         DrawText(TextFormat("Pro: %s", showProConvo ? "YES" : "NO"), GetScreenWidth() - 200, 200, 20, BLACK);
-        //drawProconvostep
-        DrawText(TextFormat("ProConvoStep: %d", proConvoStep), GetScreenWidth() - 200, 230, 20, BLACK);
+        //draw ans
+        DrawText(TextFormat("Ans: %s", ans ? "YES" : "NO"), GetScreenWidth() - 200, 230, 20, BLACK);
 
+        //drawmazeActive
+        DrawText(TextFormat("Maze: %s", mazeActive ? "YES" : "NO"), GetScreenWidth() - 200, 260, 20, BLACK);
+        //draw firstBhaiCollision
+        DrawText(TextFormat("Bhai: %s", firstBhaiCollision ? "YES" : "NO"), GetScreenWidth() - 200, 290, 20, BLACK);
+        //drawapuconvostep
+        //DrawText(TextFormat("Apu: %d", apuConvoStep), GetScreenWidth() - 200, 260, 20, BLACK);
+        //DrawText(TextFormat("Health: %d", healthSystem.GetHealth()), GetScreenWidth() - 200, 260, 20, BLACK);
+        
         
         // If Enter is pressed, switch to the next conversation step or hide the conversation
         if (showConversation && IsKeyPressed(KEY_ENTER)) {
@@ -716,6 +1005,37 @@ void Game::Run() {
             
         }
 
+        //apu
+        if (showApuConvo && IsKeyPressed(KEY_ENTER)) {
+            apuConvoStep++;
+            if (apuConvoStep == 7) {
+                firstApuCollision =true;
+                showApuConvo = false;
+            }
+        }
+
+        if(showBhaiConvo && IsKeyPressed(KEY_ENTER)){
+            bhaiConvoStep++;
+            if(ans && bhaiConvoStep==11){
+                firstBhaiCollision=false;
+                mad=true;
+                showBhaiConvo=false;
+
+            }
+            else if(!ans && bhaiConvoStep==8){
+                showBhaiConvo=false;
+            }
+        }
+
+        if(showAns && IsKeyPressed(KEY_ENTER)){
+            showAns=false;
+            showmap=true;
+            if(showmap && IsKeyPressed(KEY_ENTER)){
+                showmap=false;
+                show=true;
+            }
+        }
+
         if(showHackerConvo && IsKeyPressed(KEY_ENTER)){
             hackerConvoStep++;
             if(hackerConvoStep==7){
@@ -733,6 +1053,7 @@ void Game::Run() {
         if(showProConvo && IsKeyPressed(KEY_ENTER)){
             proConvoStep++;
             if(sequence6 && proConvoStep==14){
+                sequence7=true;
                 showProConvo=false;
             }
             
@@ -752,6 +1073,18 @@ void Game::Run() {
         }
         else if(showMystery3 && IsKeyPressed(KEY_ENTER)){
             showMystery3=false;
+        }
+
+
+
+        //Final Reveal
+        if(Final){
+           
+            if(IsKeyPressed(KEY_ENTER)){
+                finalStep++;
+                //if(finalStep==4)
+                  //  GameRunning=false;
+            }
         }
 
 
@@ -782,12 +1115,30 @@ void Game::Run() {
     UnloadTexture(hackerTexture);
     UnloadTexture(gardenerTexture);
     UnloadTexture(audiTexture);
+    UnloadTexture(bhaiTexture);
     UnloadTexture(proTexture);
+    UnloadTexture(mazeTexture);
+    UnloadTexture(apuTexture);
     UnloadTexture(conversationTexture5);
     UnloadTexture(conversationTexture6);
     UnloadTexture(conversationTexture7);
     UnloadTexture(conversationTexture8);
-    for(int i=0;i<10;i++){
+    UnloadTexture(pathTexture1);
+    UnloadTexture(pathTexture2);
+
+    for(int i=0; i<3; i++){
+        UnloadTexture(menu[i]);
+    }
+    
+    for(int i=0; i<11; i++){
+        UnloadTexture(bhaiConvoTexture[i]);
+    }
+    
+    for(int i=0; i<7; i++){
+        UnloadTexture(apuConvoTexture[i]);
+    }
+
+    for(int i=0;i<14;i++){
         UnloadTexture(proConvoTexture[i]);
     }
     for (int i = 0; i < 7; i++) {
@@ -798,6 +1149,9 @@ void Game::Run() {
     }
     for (int i = 0; i < 4; i++) {
         UnloadTexture(imamTexture[i]);
+    }
+    for (int i = 0; i < 4; i++) {
+        UnloadTexture(finalTexture[i]);
     }
     CloseWindow();
 }

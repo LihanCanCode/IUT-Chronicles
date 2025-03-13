@@ -16,13 +16,20 @@ void ResolvePlayerClassroomCollision(Rectangle& playerRect, const Rectangle& lib
 void InsideHospital(Rectangle& playerRect, const std::vector<Rectangle>& hospitalCollisions);
 void InsideLibrary(Rectangle& playerRect, const std::vector<Rectangle>& libraryCollisions);
 void InsideHall(Rectangle& playerRect, const std::vector<Rectangle>& hallCollisions);
+void InsideMaze(Rectangle& playerRect, const std::vector<Rectangle>& mazeCollisions);
 void InsideClassroom(Rectangle& playerRect, const std::vector<Rectangle>& classroomCollisions);
+void InsideAudi(Rectangle& playerRect, const std::vector<Rectangle>& audiCollisions);
 void ResolvePlayerBookCollision(Rectangle& playerRect, Rectangle& bookRect, bool& bookFound);
 void ResolvePlayerUsbCollision(Rectangle& playerRect, Rectangle& usbRect, bool& usbFound, bool& showcipher);
 void ResolvePlayerHallCollision(Rectangle& playerRect, const Rectangle& hallRect, bool& insideHall, bool& playerPositionUpdated);
 void ResolvePlayerHackerCollision(Rectangle& playerRect, const Rectangle& hackerRect, bool& showHackerConvo, int& hackerConvoStep);
 void ResolvePlayerGardenerCollision(Rectangle& playerRect, const Rectangle& gardenerRect, bool& showGardenerConvo, int& gardenerConvoStep);
 void ResolvePlayerProCollision(Rectangle& playerRect, const Rectangle& proRect, bool& showProConvo, int& proConvoStep,bool &sequence6);
+void ResolvePlayerMazeCollision(Rectangle& playerRect, const Rectangle& mazeRect, bool& mazeActive, bool& playerPositionUpdated);
+void ResolvePlayerApuCollision(Rectangle& playerRect, const Rectangle& apuRect, Vector2& conversationPosition, bool& showApuConvo, int& apuConvoStep, bool& firstApuCollision);
+void ResolvePlayerBhaiCollision(Rectangle& playerRect, const Rectangle& bhaiRect,Vector2& conversationPosition, bool& showBhaiConvo, int& bhaiConvoStep, bool& firstBhaiCollision);
+void ResolvePlayerAnsCollision(Rectangle& playerRect, Rectangle& ansRect, bool& ans);
+void FinalCollision(Rectangle& playerRect, const Rectangle& finalRect, bool& insideFinal);
 
 
 #endif // COLLISION_H

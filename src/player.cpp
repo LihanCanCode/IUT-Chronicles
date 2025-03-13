@@ -16,7 +16,7 @@ Player::Player() {
     frameWidth = 32;
     frameHeight = 32;
     spriteRows = 6;
-    spriteCols = 6;
+    spriteCols = 7;
 }
 
 void Player::LoadTextures() {

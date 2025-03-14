@@ -28,7 +28,7 @@ void ResolvePlayerProCollision(Rectangle& playerRect, const Rectangle& proRect, 
 void ResolvePlayerMazeCollision(Rectangle& playerRect, const Rectangle& mazeRect, bool& mazeActive, bool& playerPositionUpdated);
 void ResolvePlayerApuCollision(Rectangle& playerRect, const Rectangle& apuRect, Vector2& conversationPosition, bool& showApuConvo, int& apuConvoStep, bool& firstApuCollision);
 void ResolvePlayerBhaiCollision(Rectangle& playerRect, const Rectangle& bhaiRect,Vector2& conversationPosition, bool& showBhaiConvo, int& bhaiConvoStep, bool& firstBhaiCollision);
-void ResolvePlayerAnsCollision(Rectangle& playerRect, Rectangle& ansRect, bool& ans);
+void ResolvePlayerAnsCollision(Rectangle& playerRect, Rectangle& ansRect, bool& ans, bool& showAns);
 void FinalCollision(Rectangle& playerRect, const Rectangle& finalRect, bool& insideFinal);
 
 

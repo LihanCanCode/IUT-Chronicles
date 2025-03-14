@@ -4,6 +4,7 @@
 #include "player.h"
 #include "idle.h"
 #include "map.h"
+#include "professor.h"
 
 class Game {
 public:
@@ -19,6 +20,9 @@ public:
     Player player;
     Idle idle;
     Map map;
+    Professor professor;
+
+
     bool initialized;
     bool showDebugInfo;
     Vector2 cameraPosition;

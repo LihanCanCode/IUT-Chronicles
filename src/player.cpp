@@ -148,7 +148,7 @@ void Player::Draw(Vector2 cameraPosition) {
             (float)frameHeight
         };
 
-        DrawRectangleLines(playerRect.x, playerRect.y, playerRect.width, playerRect.height, GREEN);
+       // DrawRectangleLines(playerRect.x, playerRect.y, playerRect.width, playerRect.height, GREEN);
         DrawCircleV(Vector2Subtract(position, cameraPosition), 2, RED);
     }
 }

@@ -1,6 +1,7 @@
 #include "game.h"
 #include "collision.h"
 #include "idle.h"
+#include "Professor.h"
 
 #include <iostream>
 #include <vector>
@@ -176,6 +177,7 @@ Rectangle startRect = {108,137,376,150};
 Rectangle exitRect = {110,320,376,150};
 
 
+
 Game::Game(){
 
 
@@ -295,7 +297,8 @@ void Game::Initialize() {
     usbTexture = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/usb.png");
     hallTexture = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/hall.png");
     audiTexture = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/audi.png");
-    proTexture = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/professor.png");
+    //proTexture = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/professor.png");
+    professor.LoadTextures();
     hackerTexture = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/hacker.png");
     mazeTexture = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/maze.png");
     bhaiTexture = LoadTexture("C:/Users/Lihan/Desktop/Semester 2-1/Oop Lab/Project_Fall/Project_Fall/src/Bhai.png");
@@ -374,7 +377,7 @@ void Game::UpdateCamera() {
     if (gameStart) {
         // Center the camera on the menu
         camera.target = {GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f};
-        camera.zoom = 1.0f; // Set the zoom level to fit the menu
+        camera.zoom = 1.1f; // Set the zoom level to fit the menu
     }
     else if (insideClassroom) {
         // Set the camera target and zoom for the classroom
@@ -447,7 +450,7 @@ void Game::UpdateCamera() {
         // Constrain the camera within the CDS boundaries
         float minX = 0 + GetScreenWidth() / 2 / camera.zoom;
         float minY = 0 + GetScreenHeight() / 2 / camera.zoom;
-        float maxX = 1920 - GetScreenWidth() / 2 / camera.zoom;
+        float maxX = 1900 - GetScreenWidth() / 2 / camera.zoom;
         float maxY = 1080 - GetScreenHeight() / 2 / camera.zoom;
 
         if (camera.target.x < minX) camera.target.x = minX;
@@ -655,11 +658,10 @@ void Game::Run() {
         {
             Rectangle ansRect={1810,845,100,80};
             InsideMaze(playerCollisionRect, mazeCollisions);
-            ResolvePlayerAnsCollision(playerCollisionRect, ansRect, ans);
+            ResolvePlayerAnsCollision(playerCollisionRect, ansRect, ans,showAns);
             if(ans)
             {
-                showAns=true;
-                showmap=true;
+                //showAns=true;
                 mazeActive=false;
                 player.position.x=1300;
                 player.position.y=1820;
@@ -740,11 +742,12 @@ void Game::Run() {
             Vector2 origin = {0, 0};
             DrawTexturePro(audiTexture, source, dest, origin, 0.0f, WHITE); // Draw the audi map using DrawTexturePro
 
-            Rectangle source2 = {0.0f, 0.0f, (float)proTexture.width, (float)proTexture.height};
-            Rectangle dest2 = {930, 760, 450, 300}; // Set the destination rectangle to the desired dimensions
-            Vector2 origin2 = {0, 0};
-            DrawTexturePro(proTexture, source2, dest2, origin2, 0.0f, WHITE); // Draw the audi map using DrawTexturePro
-           // DrawRectangleLines(1050,870,120,120,RED);
+        //     Rectangle source2 = {0.0f, 0.0f, (float)proTexture.width, (float)proTexture.height};
+        //     Rectangle dest2 = {930, 760, 450, 300}; // Set the destination rectangle to the desired dimensions
+        //     Vector2 origin2 = {0, 0};
+        //     DrawTexturePro(proTexture, source2, dest2, origin2, 0.0f, WHITE); // Draw the audi map using DrawTexturePro
+        //    // DrawRectangleLines(1050,870,120,120,RED);
+            professor.Draw(professor.position);
         }
         else if(mazeActive){
             //DrawTexture
@@ -808,7 +811,7 @@ void Game::Run() {
 
             //Apu Drawing
             Rectangle apuSource = {0.0f, 0.0f, (float)apuTexture.width, (float)apuTexture.height};
-            Rectangle apuDest = {apuRect.x, apuRect.y, apuRect.width-10, apuRect.height}; // Set the destination rectangle to the desired dimensions
+            Rectangle apuDest = {apuRect.x, apuRect.y-50, apuRect.width+50, apuRect.height+50}; // Set the destination rectangle to the desired dimensions
             Vector2 apuOrigin = {0, 0};
             DrawTexturePro(apuTexture, apuSource, apuDest, apuOrigin, 0.0f, WHITE);
         }
@@ -879,7 +882,7 @@ void Game::Run() {
         DrawRectangleLines(1060,1800,100,100,GREEN);
         DrawRectangleLines(806,1040,30,30,GREEN);
         */
-       DrawRectangleLines(1750,500,500,500,GREEN);
+       //DrawRectangleLines(1750,500,500,500,GREEN);
 
         // If conversation is active, draw the appropriate image
         if (showConversation) {
@@ -921,7 +924,7 @@ void Game::Run() {
         }
 
         if(showmap ){
-            DrawTexture(pathTexture2, 500, 1000, WHITE);
+            DrawTexture(pathTexture2, 500, 1200, WHITE);
         }
 
         if(showHackerConvo){
@@ -937,7 +940,8 @@ void Game::Run() {
 
         if(showProConvo){
             sequence3=true;	
-            DrawTexture(proConvoTexture[proConvoStep], 900, 255, WHITE);
+            // DrawTexture(proConvoTexture[proConvoStep], 900, 255, WHITE);
+            professor.DrawConversation(professor.proConvoStep,{900,255});
         }
         // Draw the key if it is visible and has not been found
         if (keyVisible && !keyFound) {
@@ -972,6 +976,8 @@ void Game::Run() {
         DrawText(TextFormat("Maze: %s", mazeActive ? "YES" : "NO"), GetScreenWidth() - 200, 260, 20, BLACK);
         //draw firstBhaiCollision
         DrawText(TextFormat("Bhai: %s", firstBhaiCollision ? "YES" : "NO"), GetScreenWidth() - 200, 290, 20, BLACK);
+        //draw showmap
+        DrawText(TextFormat("Map: %s", showmap ? "YES" : "NO"), GetScreenWidth() - 200, 320, 20, BLACK);
         //drawapuconvostep
         //DrawText(TextFormat("Apu: %d", apuConvoStep), GetScreenWidth() - 200, 260, 20, BLACK);
         //DrawText(TextFormat("Health: %d", healthSystem.GetHealth()), GetScreenWidth() - 200, 260, 20, BLACK);
@@ -1027,13 +1033,15 @@ void Game::Run() {
             }
         }
 
-        if(showAns && IsKeyPressed(KEY_ENTER)){
-            showAns=false;
-            showmap=true;
-            if(showmap && IsKeyPressed(KEY_ENTER)){
-                showmap=false;
-                show=true;
-            }
+        if (showAns && IsKeyPressed(KEY_ENTER)) {
+            showmap = true;
+            showAns = false;
+            
+        }
+
+        if (showmap && IsKeyPressed(KEY_ENTER)) {
+            showmap = false;
+            show = true;
         }
 
         if(showHackerConvo && IsKeyPressed(KEY_ENTER)){
@@ -1051,13 +1059,13 @@ void Game::Run() {
         }
 
         if(showProConvo && IsKeyPressed(KEY_ENTER)){
-            proConvoStep++;
-            if(sequence6 && proConvoStep==14){
+            professor.proConvoStep++;
+            if(sequence6 && professor.proConvoStep==14){
                 sequence7=true;
                 showProConvo=false;
             }
             
-            else if(!sequence6 && proConvoStep==7){
+            else if(!sequence6 && professor.proConvoStep==7){
                 showProConvo=false;
             }
         }
@@ -1116,7 +1124,8 @@ void Game::Run() {
     UnloadTexture(gardenerTexture);
     UnloadTexture(audiTexture);
     UnloadTexture(bhaiTexture);
-    UnloadTexture(proTexture);
+    //UnloadTexture(proTexture);
+    professor.UnloadTextures();
     UnloadTexture(mazeTexture);
     UnloadTexture(apuTexture);
     UnloadTexture(conversationTexture5);

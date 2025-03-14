@@ -298,8 +298,8 @@ void ResolvePlayerCDSCollision(Rectangle& playerRect, const Rectangle& cdsRect, 
         insideCDS = true;
 
         if (!playerPositionUpdated) {
-            playerRect.x = 713;
-            playerRect.y = 70;
+            playerRect.x = 1335;
+            playerRect.y = 713;
             playerPositionUpdated = true;
         }
     }
@@ -549,7 +549,7 @@ void InsideAudi(Rectangle& playerRect,const std::vector<Rectangle>& audiCollisio
     }
 }
 
-void ResolvePlayerAnsCollision(Rectangle& playerRect, Rectangle& ansRect, bool& ans) {
+void ResolvePlayerAnsCollision(Rectangle& playerRect, Rectangle& ansRect, bool& ans, bool& showAns) {
     float overlapX = (playerRect.x + playerRect.width / 2) - (ansRect.x + ansRect.width / 2);
     float overlapY = (playerRect.y + playerRect.height / 2) - (ansRect.y + ansRect.height / 2);
     float halfWidthSum = (playerRect.width + ansRect.width) / 2;
@@ -558,6 +558,7 @@ void ResolvePlayerAnsCollision(Rectangle& playerRect, Rectangle& ansRect, bool& 
     if (fabs(overlapX) < halfWidthSum && fabs(overlapY) < halfHeightSum) {
         std::cout << "Collision with ans detected!" << std::endl;
         ans = true;
+        showAns = true;
     }
 }
 
